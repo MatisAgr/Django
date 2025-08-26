@@ -14,7 +14,7 @@ class Ingredient(models.Model):
     
     def __str__(self):
         if self.allergens:
-            return f"{self.name} (⚠️ {self.allergens})"
+            return f"{self.name} (allergènes : {self.allergens})"
         return self.name
     
     class Meta:
@@ -43,7 +43,7 @@ class Pizza(models.Model):
     class Meta:
         verbose_name = "Pizza"
         verbose_name_plural = "Pizzas"
-        ordering = ['-created_at']  # Tri par défaut par date de création décroissante
+        ordering = ['-created_at']
 
 class Comment(models.Model):
     pizza = models.ForeignKey(
