@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- plus stylé que le css -->
+  </head>
+  <body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+      <!-- navbar -->
+      <nav class="text-center mb-8 p-5 bg-gray-400 rounded-lg">
+        <h2 class="text-2xl font-semibold text-white">Mon Todo List</h2>
+        <div class="flex flex-wrap justify-center gap-2">
+          <a
+            href="{% url 'core:home' %}"
+            class="{% if request.resolver_match.url_name == 'home' %}bg-green-500 text-black{% else %}bg-blue-500 text-white hover:bg-blue-600{% endif %} px-4 py-2 rounded-lg transition-colors duration-300"
+          >
+            Home
+          </a>
+          <a
+            href="{% url 'core:about' %}"
+            class="{% if request.resolver_match.url_name == 'about' %}bg-green-500 text-black{% else %}bg-blue-500 text-white hover:bg-blue-600{% endif %} px-4 py-2 rounded-lg transition-colors duration-300"
+          >
+            About
+          </a>
+          <a
+            href="{% url 'core:task_list' %}"
+            class="{% if request.resolver_match.url_name == 'task_list' %}bg-green-500 text-black{% else %}bg-blue-500 text-white hover:bg-blue-600{% endif %} px-4 py-2 rounded-lg transition-colors duration-300"
+          >
+            All Tasks
+          </a>
+          <a
+            href="{% url 'core:task_active' %}"
+            class="{% if request.resolver_match.url_name == 'task_active' %}bg-green-500 text-black{% else %}bg-blue-500 text-white hover:bg-blue-600{% endif %} px-4 py-2 rounded-lg transition-colors duration-300"
+          >
+            Active Tasks
+          </a>
+        </div>
+      </nav>
+
+      <!-- date -->
+      <div class="text-center mb-8 pb-6 border-b-2 border-primary">
+        <p class="text-gray-600 italic">Nous somme le : {{ today }}</p>
+      </div>
+
+      <!-- permettre de mettre le 'body' ici -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        {% block content %} {% endblock %}
+      </div>
+
+      <!-- footer -->
+      <footer class="text-center mt-8 bg-gray-200 rounded-lg">
+        <p class="text-gray-600">footer todo</p>
+      </footer>
+
+    </div>
+  </body>
+</html>

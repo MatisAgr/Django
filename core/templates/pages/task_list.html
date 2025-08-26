@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+
+    <!-- stats -->
+    {% include 'components/statstask.html' %} <!--comme en php-->
+
+    
+    <!-- Liste des tâches -->
+    <div>
+        {% if tasks %}
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                Liste des tâches ({{ tasks.count }} tâche{{ tasks.count|pluralize }})
+            </h3>
+            <div class="space-y-4">
+                {% for task in tasks %}
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-300">
+                        <a href="{% url 'core:task_detail' task.pk %}" class="block">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-2xl">
+                                        {% if task.completed %}
+                                            <span class="text-green-500">✅</span>
+                                        {% else %}
+                                            <span class="text-amber-500">⏳</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-lg font-semibold {% if task.completed %}line-through text-gray-500{% else %}text-gray-800{% endif %}">
+                                            {{ task.title }}
+                                        </h4>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            Créée le : {{ task.created_at|date:"d/m/Y à H:i" }}
+                                            {% if task.completed %}
+                                                - <span class="text-green-600 font-semibold">Terminée</span>
+                                            {% else %}
+                                                - <span class="text-amber-600 font-semibold">En cours</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="text-6xl mb-4">📝</div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucune tâche trouvée</h3>
+                <p class="text-gray-500 mb-6">Commencez par ajouter quelques tâches via l'interface d'administration.</p>
+                <a href="/admin/" 
+                   class="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                    Accéder à l'administration
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

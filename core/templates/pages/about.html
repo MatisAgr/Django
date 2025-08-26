@@ -1,0 +1,140 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <div class="space-y-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">À propos (généré par IA)</h2>
+            <p class="text-lg text-gray-600">
+                Cette application Todo List a été développée avec Django dans le cadre d'un projet d'apprentissage.
+            </p>
+        </div>
+
+        <!-- Objectifs pédagogiques -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="text-2xl font-bold text-blue-800 mb-4 flex items-center">
+                🎯 Objectifs pédagogiques
+            </h3>
+            <ul class="space-y-3">
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-3 mt-1">•</span>
+                    <span class="text-gray-700">Apprendre les bases du framework Django</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-3 mt-1">•</span>
+                    <span class="text-gray-700">Comprendre l'architecture MVT (Model-View-Template)</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-3 mt-1">•</span>
+                    <span class="text-gray-700">Manipuler l'ORM Django</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-3 mt-1">•</span>
+                    <span class="text-gray-700">Créer des vues et des templates</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-500 mr-3 mt-1">•</span>
+                    <span class="text-gray-700">Gérer les URLs et le routing</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Technologies utilisées -->
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+            <h3 class="text-2xl font-bold text-green-800 mb-4 flex items-center">
+                🛠️ Technologies utilisées
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <span class="text-green-500 mr-3">🐍</span>
+                        <div>
+                            <strong class="text-gray-800">Django</strong>
+                            <p class="text-gray-600 text-sm">Framework web Python</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-green-500 mr-3">🗄️</span>
+                        <div>
+                            <strong class="text-gray-800">SQLite</strong>
+                            <p class="text-gray-600 text-sm">Base de données (par défaut)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <span class="text-green-500 mr-3">🎨</span>
+                        <div>
+                            <strong class="text-gray-800">HTML/CSS</strong>
+                            <p class="text-gray-600 text-sm">Interface utilisateur</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-green-500 mr-3">💨</span>
+                        <div>
+                            <strong class="text-gray-800">Tailwind CSS</strong>
+                            <p class="text-gray-600 text-sm">Framework CSS utilitaire</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités implémentées -->
+        <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+            <h3 class="text-2xl font-bold text-purple-800 mb-4 flex items-center">
+                ⚡ Fonctionnalités implémentées
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <span class="text-purple-500 mr-3 mt-1">✅</span>
+                        <span class="text-gray-700">Affichage de la date du jour sur toutes les pages</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-500 mr-3 mt-1">✅</span>
+                        <span class="text-gray-700">Liste complète des tâches avec tri par date</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-500 mr-3 mt-1">✅</span>
+                        <span class="text-gray-700">Filtrage des tâches actives</span>
+                    </li>
+                </ul>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <span class="text-purple-500 mr-3 mt-1">✅</span>
+                        <span class="text-gray-700">Affichage détaillé de chaque tâche</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-500 mr-3 mt-1">✅</span>
+                        <span class="text-gray-700">Compteurs et statistiques</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-purple-500 mr-3 mt-1">✅</span>
+                        <span class="text-gray-700">Interface d'administration</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <p class="text-lg text-gray-600 italic">
+                💼 <strong>Projet réalisé dans le cadre du cours Django - IPSSI</strong>
+            </p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <div class="text-center">
+                    <div class="text-2xl">🐍</div>
+                    <p class="text-sm text-gray-500">Python 3.11</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl">🚀</div>
+                    <p class="text-sm text-gray-500">Django 5.2</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl">💨</div>
+                    <p class="text-sm text-gray-500">Tailwind CSS</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
