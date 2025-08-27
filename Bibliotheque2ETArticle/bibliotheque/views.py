@@ -17,12 +17,12 @@ from .serializers import (
 from .forms import ArticleForm, CommentaireForm
 from .permissions import IsOwnerOrReadOnly, IsInGroupFactory
 
-# Exercice 3 : Vue fonction basique
+# vue  basique (pareil que les autres chapitres)
 def current_datetime(request):
     now = datetime.now()
     return render(request, 'bibliotheque/now.html', {'datetime': now})
 
-# Exercice 4 : Vues génériques
+# vues items
 class ArticleListView(ListView):
     model = Article
     template_name = 'bibliotheque/article_list.html'
@@ -39,7 +39,7 @@ class ArticleDetailView(DetailView):
         context['commentaire_form'] = CommentaireForm()
         return context
 
-# Exercice 6 : Formulaire et messages
+# form de création d'article
 class ArticleCreateView(CreateView):
     model = Article
     form_class = ArticleForm
@@ -50,7 +50,7 @@ class ArticleCreateView(CreateView):
         messages.success(self.request, 'Article créé avec succès !')
         return super().form_valid(form)
 
-# Vue pour ajouter un commentaire
+# form de création d'un commentaire
 class CommentaireCreateView(CreateView):
     model = Commentaire
     form_class = CommentaireForm
@@ -64,8 +64,8 @@ class CommentaireCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy('article_detail', kwargs={'pk': self.kwargs['article_pk']})
 
-# DRF ViewSets avec permissions (Chapitre 3)
 
+# DRF ViewSets avec permissions (Chapitre 3)
 # 3. D – Restrictions de lecture/écriture : IsAuthenticatedOrReadOnly pour LivreViewSet
 class LivreViewSet(viewsets.ModelViewSet):
     queryset = Livre.objects.all()
@@ -76,9 +76,9 @@ class LivreViewSet(viewsets.ModelViewSet):
 class AuteurViewSet(viewsets.ModelViewSet):
     queryset = Auteur.objects.all()
     serializer_class = AuteurSerializer
-    
+
+    # filtrer par année de naissance
     def get_queryset(self):
-        """Filtrage par année de naissance"""
         queryset = Auteur.objects.all()
         year = self.request.query_params.get('year', None)
         if year is not None:
@@ -88,10 +88,10 @@ class AuteurViewSet(viewsets.ModelViewSet):
             except ValueError:
                 pass
         return queryset
-    
+
+    # action qui renvoie les titres des livres de l'auteur
     @action(detail=True, methods=['get'])
     def titres(self, request, pk=None):
-        """Action personnalisée qui renvoie les titres des livres de l'auteur"""
         auteur = self.get_object()
         titres = [livre.titre for livre in auteur.livres.all()]
         return Response({'titres': titres})
@@ -102,9 +102,9 @@ class ArticleListViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [permissions.AllowAny] #E – AllowAny
-    
+
+    # l'utilisateur devient automatiquement le owner de l'article si authentifié
     def perform_create(self, serializer):
-        """Assigne automatiquement l'utilisateur connecté comme propriétaire"""
         if self.request.user.is_authenticated:
             serializer.save(owner=self.request.user)
         else:
@@ -116,13 +116,13 @@ class NoteViewSet(viewsets.ModelViewSet):
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
-    
+
+    # filtre par propriétaire
     def get_queryset(self):
-        """Filtre les notes pour ne montrer que celles de l'utilisateur connecté"""
         return Note.objects.filter(owner=self.request.user)
     
+    # utilisateur devient automatiquement le owner de la note si authentifié
     def perform_create(self, serializer):
-        """Assigne automatiquement l'utilisateur connecté comme propriétaire"""
         serializer.save(owner=self.request.user)
 
 
@@ -132,19 +132,17 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentaireSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
+    # donne la list des perms pour cette vues
     def get_permissions(self):
-        """
-        Instancie et retourne la liste des permissions requises pour cette vue.
-        """
         if self.action == 'destroy':
-            # Seuls les modérateurs peuvent supprimer
+            # modérateurs peuvent supprimer
             permission_classes = [IsInGroupFactory("moderator")]
         else:
-            # Lecture pour tous, écriture pour les authentifiés
+            # Lecture pour tous, écriture pour les auth
             permission_classes = [permissions.IsAuthenticatedOrReadOnly]
         
         return [permission() for permission in permission_classes]
     
+    # utilisateur devient automatiquement le owner du commentaire si authentifié
     def perform_create(self, serializer):
-        """Assigne automatiquement l'utilisateur connecté comme propriétaire"""
         serializer.save(owner=self.request.user)
