@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',  # C – Activation de TokenAuthentication
     'bibliotheque',
 ]
 
@@ -131,8 +132,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAdminUser',
     ],
+    # Configuration complète pour tester toutes les authentifications
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # Pour le test D
+        'rest_framework.authentication.BasicAuthentication',    # Pour le test E
+        'rest_framework.authentication.TokenAuthentication',   # Pour le test C
     ],
 }

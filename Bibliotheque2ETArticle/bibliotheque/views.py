@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from rest_framework import viewsets, permissions
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from .models import Auteur, Livre, Article, Commentaire, Categorie, Note
 from .serializers import (
@@ -146,3 +146,133 @@ class CommentViewSet(viewsets.ModelViewSet):
     # utilisateur devient automatiquement le owner du commentaire si authentifié
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+# E – Test BasicAuthentication
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def basic_auth_test(request):
+    """
+    Endpoint de test pour BasicAuthentication
+    Testez avec: curl -u username:password http://127.0.0.1:8000/api/test-basic/
+    """
+    return Response({
+        'message': 'BasicAuthentication fonctionne !',
+        'user': request.user.username,
+        'is_staff': request.user.is_staff,
+        'groups': [group.name for group in request.user.groups.all()],
+        'authentication': str(request.auth),
+        'authentication_class': request.authenticators[0].__class__.__name__ if request.authenticators else 'None'
+    })
+
+
+# D – SessionAuth et CSRF
+@api_view(['GET'])
+def session_auth_test(request):
+    """
+    Endpoint de test pour SessionAuthentication avec gestion CSRF
+    Accessible via navigateur après connexion admin Django
+    """
+    from rest_framework.authentication import SessionAuthentication
+    from rest_framework import permissions as drf_permissions
+    
+    # Utiliser SessionAuthentication pour cette vue spécifiquement
+    if request.user.is_authenticated:
+        return Response({
+            'message': 'SessionAuthentication fonctionne !',
+            'user': request.user.username,
+            'is_staff': request.user.is_staff,
+            'session_key': request.session.session_key,
+            'csrf_token': request.META.get('CSRF_COOKIE', 'Non trouvé'),
+            'authentication_method': 'Session',
+            'groups': [group.name for group in request.user.groups.all()],
+        })
+    else:
+        return Response({
+            'message': 'Non authentifié',
+            'hint': 'Connectez-vous via /admin/ puis revenez ici',
+            'login_url': '/admin/login/'
+        }, status=401)
+
+
+# C – TokenAuth
+@api_view(['POST'])
+def generate_token(request):
+    """
+    Endpoint pour générer un token d'authentification
+    POST avec basic auth ou session auth : username/password
+    """
+    from rest_framework.authtoken.models import Token
+    from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+    from django.contrib.auth import authenticate
+    
+    # Si déjà authentifié, générer token directement
+    if request.user.is_authenticated:
+        token, created = Token.objects.get_or_create(user=request.user)
+        return Response({
+            'token': token.key,
+            'user': request.user.username,
+            'created': 'Nouveau token' if created else 'Token existant',
+            'instructions': 'Utilisez ce token dans l\'header: Authorization: Token ' + token.key
+        })
+    
+    # Sinon, authentifier avec username/password
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    if not username or not password:
+        return Response({
+            'error': 'Username et password requis',
+            'format': 'POST /generate-token/ avec {"username": "...", "password": "..."}'
+        }, status=400)
+    
+    user = authenticate(username=username, password=password)
+    if user:
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user': user.username,
+            'created': 'Nouveau token' if created else 'Token existant',
+            'instructions': 'Utilisez ce token dans l\'header: Authorization: Token ' + token.key
+        })
+    else:
+        return Response({
+            'error': 'Identifiants invalides'
+        }, status=401)
+
+
+@api_view(['GET'])
+def token_auth_test(request):
+    """
+    Endpoint de test pour TokenAuthentication
+    Requiert header: Authorization: Token <your-token>
+    """
+    from rest_framework.authtoken.models import Token
+    
+    # Vérifier si la requête utilise TokenAuthentication
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    
+    if not auth_header.startswith('Token '):
+        return Response({
+            'error': 'Token requis',
+            'format': 'Header: Authorization: Token <your-token>',
+            'get_token': 'POST /generate-token/ avec vos identifiants'
+        }, status=401)
+    
+    token_key = auth_header.replace('Token ', '')
+    
+    try:
+        token = Token.objects.get(key=token_key)
+        user = token.user
+        return Response({
+            'message': 'TokenAuthentication fonctionne !',
+            'user': user.username,
+            'token': token_key[:10] + '...',  # Masquer le token complet
+            'is_staff': user.is_staff,
+            'authentication_method': 'Token',
+            'groups': [group.name for group in user.groups.all()],
+        })
+    except Token.DoesNotExist:
+        return Response({
+            'error': 'Token invalide'
+        }, status=401)
