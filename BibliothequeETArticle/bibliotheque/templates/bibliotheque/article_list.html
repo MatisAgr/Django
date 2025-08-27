@@ -31,6 +31,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- si articles est vide -->
         {% empty %}
         <div class="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg p-6">
             <p class="mb-4">Aucun article n'a encore été publié.</p>
@@ -38,9 +40,10 @@
                 Créer le premier article
             </a>
         </div>
+
         {% endfor %}
 
-        <!-- Pagination -->
+        <!-- pagination -->
         {% if is_paginated %}
         <nav class="mt-8">
             <ul class="flex justify-center space-x-2">

@@ -9,6 +9,8 @@
             <h2 class="text-2xl font-bold text-center">Date et Heure Actuelles</h2>
         </div>
         
+
+        <!-- TODO: mettre la date et l'heure française -->
         <div class="p-8 text-center">
             <div class="mb-6">
                 <h3 class="text-3xl font-bold text-blue-600 mb-2">
@@ -21,10 +23,7 @@
             
             <div class="text-gray-500 mb-6">
                 <p class="flex items-center justify-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                    </svg>
-                    Fuseau horaire : {{ datetime|date:"T" }}
+                    Fuseau horaire : {{ datetime|date:"T" }} <!-- afficher depuis la config TIME_ZONE -->
                 </p>
             </div>
         </div>
@@ -32,10 +31,7 @@
     
     <div class="text-center mt-6">
         <a href="{% url 'article_list' %}" class="inline-flex items-center bg-blue-500 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0L2.586 11H10a1 1 0 010 2H2.586l3.707 3.707a1 1 0 01-1.414 1.414L.172 12.414a2 2 0 010-2.828L4.88.879a1 1 0 011.414 1.414L2.586 9H10a1 1 0 010 2H7.707z" clip-rule="evenodd"></path>
-            </svg>
-            Retour aux Articles
+            Retour
         </a>
     </div>
 </div>
