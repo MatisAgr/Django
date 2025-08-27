@@ -1,0 +1,104 @@
+{% extends 'bibliotheque/base.html' %}
+
+{% block title %}{{ article.titre }} - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div class="lg:col-span-3">
+        <article class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="p-8">
+                <header class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ article.titre }}</h1>
+                    <div class="flex items-center space-x-4 text-gray-600">
+                        <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">
+                            {{ article.categorie.nom }}
+                        </span>
+                        <span class="text-sm">
+                            Publié le {{ article.date|date:"d/m/Y à H:i" }}
+                        </span>
+                    </div>
+                </header>
+                
+                <div class="prose max-w-none text-gray-700 leading-relaxed">
+                    {{ article.contenu|linebreaks }}
+                </div>
+            </div>
+        </article>
+
+        <!-- commentaires -->
+        <section class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-900">
+                    Commentaires ({{ article.commentaires.count }})
+                </h3>
+            </div>
+            
+            <!-- form ajout d'un comm -->
+            <div class="p-6 border-b bg-gray-50">
+                <h4 class="text-lg font-medium text-gray-900 mb-4">Ajouter un commentaire</h4>
+                <form method="post" action="{% url 'commentaire_create' article.pk %}" class="space-y-4">
+
+                <!-- à mettre à chaque formulaire -->
+                <!-- CSRF = Cross-Site Request Forgery (Falsification de requête inter-sites) -->
+                {% csrf_token %}
+
+                    <div>
+                        <label for="{{ commentaire_form.nom.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nom :
+                        </label>
+                        <input type="text" name="{{ commentaire_form.nom.name }}" id="{{ commentaire_form.nom.id_for_label }}" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="{{ commentaire_form.contenu.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Commentaire :
+                        </label>
+                        <textarea name="{{ commentaire_form.contenu.name }}" id="{{ commentaire_form.contenu.id_for_label }}" rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white px-6 py-2 rounded transition">
+                        Ajouter le commentaire
+                    </button>
+                </form>
+            </div>
+
+            <!-- list des comm -->
+            <div class="divide-y divide-gray-200">
+                {% for commentaire in article.commentaires.all %}
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h5 class="font-semibold text-gray-900">{{ commentaire.nom }}</h5>
+                        <span class="text-gray-500 text-sm">{{ commentaire.date|date:"d/m/Y à H:i" }}</span>
+                    </div>
+                    <div class="text-gray-700 leading-relaxed">
+                        {{ commentaire.contenu|linebreaks }}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-6 text-center">
+                    <div class="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg p-4">
+                        Aucun commentaire
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+    
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-900">Navigation</h3>
+            </div>
+            <div class="p-6 space-y-3">
+                <a href="{% url 'article_list' %}" class="block w-full bg-gray-500 hover:bg-gray-700 text-white text-center px-4 py-2 rounded transition">
+                    Retour
+                </a>
+                <a href="{% url 'article_create' %}" class="block w-full bg-green-500 hover:bg-green-700 text-white text-center px-4 py-2 rounded transition">
+                    Créer
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

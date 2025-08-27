@@ -1,0 +1,99 @@
+{% extends 'bibliotheque/base.html' %}
+
+{% block title %}Liste des Articles - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div class="lg:col-span-3">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Articles du Blog</h1>
+        
+        {% for article in articles %}
+        <div class="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-3">
+                    <a href="{% url 'article_detail' article.pk %}" class="text-blue-600 hover:text-blue-800 transition">
+                        {{ article.titre }}
+                    </a>
+                </h2>
+                <p class="text-gray-700 mb-4 leading-relaxed">{{ article.contenu|truncatewords:30 }}</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">
+                            {{ article.categorie.nom }}
+                        </span>
+                        <span class="text-gray-500 text-sm">
+                            {{ article.date|date:"d/m/Y à H:i" }}
+                        </span>
+                    </div>
+                    <a href="{% url 'article_detail' article.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
+                        Lire la suite
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-blue-50 border border-blue-200 text-blue-700 rounded-lg p-6">
+            <p class="mb-4">Aucun article n'a encore été publié.</p>
+            <a href="{% url 'article_create' %}" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
+                Créer le premier article
+            </a>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-8">
+            <ul class="flex justify-center space-x-2">
+                {% if page_obj.has_previous %}
+                    <li>
+                        <a href="?page=1" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded transition">
+                            &laquo; Première
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded transition">
+                            Précédente
+                        </a>
+                    </li>
+                {% endif %}
+                
+                <li>
+                    <span class="bg-blue-500 text-white px-3 py-2 rounded">
+                        Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li>
+                        <a href="?page={{ page_obj.next_page_number }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded transition">
+                            Suivante
+                        </a>
+                    </li>
+                    <li>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded transition">
+                            Dernière &raquo;
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+    
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-900">Actions</h3>
+            </div>
+            <div class="p-6 space-y-3">
+                <a href="{% url 'article_create' %}" class="block w-full bg-green-500 hover:bg-green-700 text-white text-center px-4 py-2 rounded transition">
+                    Nouvel Article
+                </a>
+                <a href="/admin/" class="block w-full bg-gray-500 hover:bg-gray-700 text-white text-center px-4 py-2 rounded transition">
+                    Administration
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
