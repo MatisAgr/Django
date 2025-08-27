@@ -1,0 +1,1 @@
+F. Sans permissions, l'authentification devient inutile car tous les utilisateurs authentifiés auraient les mêmes droits.
