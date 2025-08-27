@@ -42,7 +42,7 @@ class Livre(models.Model):
 class Article(models.Model):
     titre = models.CharField(max_length=200, verbose_name="Titre")
     contenu = models.TextField(verbose_name="Contenu")
-    date = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Date de création") # date automatique
     categorie = models.ForeignKey(
         Categorie,
         on_delete=models.CASCADE,
@@ -64,7 +64,7 @@ class Article(models.Model):
 class Commentaire(models.Model):
     article = models.ForeignKey(
         Article,
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE, # suppression en cascade
         related_name='commentaires',
         verbose_name="Article"
     )
