@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 class Categorie(models.Model):
     nom = models.CharField(max_length=50, verbose_name="Nom") #50 car c'est dans l'énoncé (Chap2 2.E)
@@ -49,6 +50,14 @@ class Article(models.Model):
         related_name='articles',
         verbose_name="Catégorie"
     )
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='articles',
+        verbose_name="Propriétaire",
+        null=True,
+        blank=True
+    )
     
     def __str__(self):
         return self.titre
@@ -71,6 +80,14 @@ class Commentaire(models.Model):
     nom = models.CharField(max_length=100, verbose_name="Nom")
     contenu = models.TextField(verbose_name="Commentaire")
     date = models.DateTimeField(auto_now_add=True, verbose_name="Date")
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='commentaires',
+        verbose_name="Propriétaire",
+        null=True,
+        blank=True
+    )
     
     def __str__(self):
         return f"Commentaire de {self.nom} sur {self.article.titre}"
@@ -79,3 +96,23 @@ class Commentaire(models.Model):
         verbose_name = "Commentaire"
         verbose_name_plural = "Commentaires"
         ordering = ['-date']
+
+class Note(models.Model):
+    titre = models.CharField(max_length=200, verbose_name="Titre")
+    contenu = models.TextField(verbose_name="Contenu")
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+    date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='notes',
+        verbose_name="Propriétaire"
+    )
+    
+    def __str__(self):
+        return self.titre
+    
+    class Meta:
+        verbose_name = "Note"
+        verbose_name_plural = "Notes"
+        ordering = ['-date_creation']

@@ -3,12 +3,19 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView
 from django.contrib import messages
 from django.urls import reverse_lazy
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Auteur, Livre, Article, Commentaire, Categorie
-from .serializers import AuteurSerializer, LivreSerializer
+from .models import Auteur, Livre, Article, Commentaire, Categorie, Note
+from .serializers import (
+    AuteurSerializer, 
+    LivreSerializer, 
+    ArticleSerializer, 
+    CommentaireSerializer, 
+    NoteSerializer
+)
 from .forms import ArticleForm, CommentaireForm
+from .permissions import IsOwnerOrReadOnly, IsInGroupFactory
 
 # Exercice 3 : Vue fonction basique
 def current_datetime(request):
@@ -57,10 +64,14 @@ class CommentaireCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy('article_detail', kwargs={'pk': self.kwargs['article_pk']})
 
-# DRF ViewSets (Chapitre 3)
+# DRF ViewSets avec permissions (Chapitre 3)
+
+# 3. D – Restrictions de lecture/écriture : IsAuthenticatedOrReadOnly pour LivreViewSet
 class LivreViewSet(viewsets.ModelViewSet):
     queryset = Livre.objects.all()
     serializer_class = LivreSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 
 class AuteurViewSet(viewsets.ModelViewSet):
     queryset = Auteur.objects.all()
@@ -84,3 +95,56 @@ class AuteurViewSet(viewsets.ModelViewSet):
         auteur = self.get_object()
         titres = [livre.titre for livre in auteur.livres.all()]
         return Response({'titres': titres})
+
+
+# ArticleListViewSet public
+class ArticleListViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.AllowAny] #E – AllowAny
+    
+    def perform_create(self, serializer):
+        """Assigne automatiquement l'utilisateur connecté comme propriétaire"""
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
+
+
+# 5. B – Permission basée sur le propriétaire : NoteViewSet avec IsOwnerOrReadOnly
+class NoteViewSet(viewsets.ModelViewSet):
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    
+    def get_queryset(self):
+        """Filtre les notes pour ne montrer que celles de l'utilisateur connecté"""
+        return Note.objects.filter(owner=self.request.user)
+    
+    def perform_create(self, serializer):
+        """Assigne automatiquement l'utilisateur connecté comme propriétaire"""
+        serializer.save(owner=self.request.user)
+
+
+# 6. A – Permission basée sur le groupe : CommentViewSet avec IsInGroup("moderator")
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Commentaire.objects.all()
+    serializer_class = CommentaireSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get_permissions(self):
+        """
+        Instancie et retourne la liste des permissions requises pour cette vue.
+        """
+        if self.action == 'destroy':
+            # Seuls les modérateurs peuvent supprimer
+            permission_classes = [IsInGroupFactory("moderator")]
+        else:
+            # Lecture pour tous, écriture pour les authentifiés
+            permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+        
+        return [permission() for permission in permission_classes]
+    
+    def perform_create(self, serializer):
+        """Assigne automatiquement l'utilisateur connecté comme propriétaire"""
+        serializer.save(owner=self.request.user)
